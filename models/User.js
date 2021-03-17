@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const { BCRYPT_WORK_FACTOR } = require('../config/bcryptConfig');
 
 const userSchema = new mongoose.Schema(
   {
@@ -25,6 +27,17 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// hash password before saving
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(this.password, BCRYPT_WORK_FACTOR);
+  next();
+});
+
+// method to compare passwords
+userSchema.methods.comparePassword = function (plainTextPassword) {
+  return bcrypt.compare(plainTextPassword, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 
