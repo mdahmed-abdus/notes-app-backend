@@ -25,6 +25,7 @@ const noteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// check if user id exists before saving
 noteSchema.pre('save', async function (next) {
   const userExists = await User.exists({ _id: this.ownerId });
 
@@ -34,6 +35,11 @@ noteSchema.pre('save', async function (next) {
 
   next(new Error('Invalid user id'));
 });
+
+// method to validate owner
+noteSchema.methods.isOwner = function (userId) {
+  return userId === this.ownerId.toString();
+};
 
 const Note = mongoose.model('Note', noteSchema);
 
