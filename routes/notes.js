@@ -1,6 +1,10 @@
 const express = require('express');
 const { Note } = require('../models/Note');
 const { NotFound } = require('../errors/customErrors');
+const validateId = require('../middleware/validateId');
+
+// validate id provided in params
+router.param('id', validateId);
 
 const router = express.Router();
 
