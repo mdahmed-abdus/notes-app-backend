@@ -3,10 +3,10 @@ const { Note } = require('../models/Note');
 const { NotFound } = require('../errors/customErrors');
 const validateId = require('../middleware/validateId');
 
+const router = express.Router();
+
 // validate id provided in params
 router.param('id', validateId);
-
-const router = express.Router();
 
 router.post('/', async (req, res) => {
   const note = new Note({ ...req.body, ownerId: req.session.userId });
