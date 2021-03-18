@@ -1,6 +1,7 @@
 const express = require('express');
 const { User } = require('../models/User');
 const authService = require('../services/authService');
+const { BadRequest } = require('../errors/customErrors');
 
 const router = express.Router();
 
@@ -13,9 +14,7 @@ router.post('/register', async (req, res) => {
   const userExists = await User.exists({ email: req.body.email });
 
   if (userExists) {
-    return res
-      .status(400)
-      .json({ success: false, message: 'User already registered' });
+    throw new BadRequest('User already registered');
   }
 
   const user = new User(req.body);
@@ -30,17 +29,13 @@ router.post('/login', async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
-    return res
-      .status(400)
-      .json({ success: false, message: 'Invalid email or password' });
+    throw new BadRequest('Invalid email or password');
   }
 
   const validPassword = await user.comparePassword(req.body.password);
 
   if (!validPassword) {
-    return res
-      .status(400)
-      .json({ success: false, message: 'Invalid email or password' });
+    throw new BadRequest('Invalid email or password');
   }
 
   authService.login(req, user._id);

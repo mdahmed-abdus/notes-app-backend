@@ -5,6 +5,7 @@ const connectDb = require('./services/connectDb');
 const { APP_PORT, NODE_ENV } = require('./config/appConfig');
 const appMiddleware = require('./middleware/appMiddleware');
 const appRoutes = require('./routes/appRoutes');
+const appErrors = require('./errors/appErrors');
 
 const app = express();
 
@@ -13,6 +14,7 @@ connectDb(app);
 app.on('ready', () => {
   appMiddleware(app);
   appRoutes(app);
+  appErrors(app);
 
   app.listen(APP_PORT, () => {
     console.log(`Server running on port: ${APP_PORT} in '${NODE_ENV}' mode`);
