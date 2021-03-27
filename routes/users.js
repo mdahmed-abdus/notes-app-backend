@@ -1,4 +1,5 @@
 const express = require('express');
+const _ = require('lodash');
 const { User } = require('../models/User');
 const authService = require('../services/authService');
 const { BadRequest } = require('../errors/customErrors');
@@ -20,9 +21,11 @@ router.post('/register', async (req, res) => {
   const user = new User(req.body);
   await user.save();
 
-  delete user.password;
-
-  res.status(201).json({ success: true, message: 'User registered', user });
+  res.status(201).json({
+    success: true,
+    message: 'User registered',
+    user: _.pick(user, ['_id', 'name', 'email', 'createdAt']),
+  });
 });
 
 router.post('/login', async (req, res) => {
