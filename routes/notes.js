@@ -3,6 +3,7 @@ const { Note } = require('../models/Note');
 const { NotFound } = require('../errors/customErrors');
 const validateId = require('../middleware/validateId');
 const catchAsyncErr = require('../middleware/catchAsyncErr');
+const { auth, active } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ router.param('id', validateId);
 
 router.post(
   '/',
+  [auth, active],
   catchAsyncErr(async (req, res) => {
     const note = new Note({ ...req.body, ownerId: req.session.userId });
 
@@ -22,6 +24,7 @@ router.post(
 
 router.get(
   '/:id',
+  [auth, active],
   catchAsyncErr(async (req, res) => {
     const note = await Note.findById(req.params.id);
 
@@ -39,6 +42,7 @@ router.get(
 
 router.put(
   '/:id',
+  [auth, active],
   catchAsyncErr(async (req, res) => {
     const note = await Note.findById(req.params.id);
 
@@ -64,6 +68,7 @@ router.put(
 
 router.delete(
   '/:id',
+  [auth, active],
   catchAsyncErr(async (req, res) => {
     const note = await Note.findById(req.params.id);
 

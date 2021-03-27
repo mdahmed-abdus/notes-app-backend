@@ -4,11 +4,13 @@ const { User } = require('../models/User');
 const authService = require('../services/authService');
 const { BadRequest } = require('../errors/customErrors');
 const catchAsyncErr = require('../middleware/catchAsyncErr');
+const { auth, active, guest } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.get(
   '/profile',
+  [auth, active],
   catchAsyncErr(async (req, res) => {
     const user = await User.findById(req.session.userId).select('-password');
     res.json({ success: true, message: 'User details', user });
@@ -17,6 +19,7 @@ router.get(
 
 router.post(
   '/register',
+  guest,
   catchAsyncErr(async (req, res) => {
     const userExists = await User.exists({ email: req.body.email });
 
@@ -37,6 +40,7 @@ router.post(
 
 router.post(
   '/login',
+  guest,
   catchAsyncErr(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
 
@@ -58,6 +62,7 @@ router.post(
 
 router.post(
   '/logout',
+  [auth, active],
   catchAsyncErr((req, res) => {
     authService.logout(req, res);
   })
