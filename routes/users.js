@@ -5,6 +5,7 @@ const authService = require('../services/authService');
 const { BadRequest } = require('../errors/customErrors');
 const catchAsyncErr = require('../middleware/catchAsyncErr');
 const { auth, active, guest } = require('../middleware/authMiddleware');
+const { registerSchema, loginSchema } = require('../validators/userValidator');
 
 const router = express.Router();
 
@@ -21,13 +22,19 @@ router.post(
   '/register',
   guest,
   catchAsyncErr(async (req, res) => {
+    const { error: validationError } = registerSchema.validate(req.body);
+
+    if (validationError) {
+      throw new BadRequest(validationError.details[0].message);
+    }
+
     const userExists = await User.exists({ email: req.body.email });
 
     if (userExists) {
       throw new BadRequest('User already registered');
     }
 
-    const user = new User(req.body);
+    const user = new User(_.pick(req.body, ['name', 'email', 'password']));
     await user.save();
 
     res.status(201).json({
@@ -42,6 +49,12 @@ router.post(
   '/login',
   guest,
   catchAsyncErr(async (req, res) => {
+    const { error: validationError } = loginSchema.validate(req.body);
+
+    if (validationError) {
+      throw new BadRequest(validationError.details[0].message);
+    }
+
     const user = await User.findOne({ email: req.body.email });
     const validPassword = await user?.comparePassword(req.body.password);
 

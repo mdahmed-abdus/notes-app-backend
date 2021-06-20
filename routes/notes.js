@@ -1,9 +1,13 @@
 const express = require('express');
 const { Note } = require('../models/Note');
-const { NotFound } = require('../errors/customErrors');
+const { NotFound, BadRequest } = require('../errors/customErrors');
 const validateId = require('../middleware/validateId');
 const catchAsyncErr = require('../middleware/catchAsyncErr');
 const { auth, active } = require('../middleware/authMiddleware');
+const {
+  newNoteSchema,
+  updateNoteSchema,
+} = require('../validators/noteValidator');
 
 const router = express.Router();
 
@@ -14,6 +18,12 @@ router.post(
   '/',
   [auth, active],
   catchAsyncErr(async (req, res) => {
+    const { error: validationError } = newNoteSchema.validate(req.body);
+
+    if (validationError) {
+      throw new BadRequest(validationError.details[0].message);
+    }
+
     const note = new Note({ ...req.body, ownerId: req.session.userId });
 
     await note.save();
@@ -40,6 +50,13 @@ router.put(
   '/:id',
   [auth, active],
   catchAsyncErr(async (req, res) => {
+    const { error: validationError } = updateNoteSchema.validate(req.body);
+
+    if (validationError) {
+      console.log(validationError);
+      throw new BadRequest(validationError.details[0].message);
+    }
+
     const note = await Note.findById(req.params.id);
 
     if (!note?.isOwner(req.session.userId)) {
