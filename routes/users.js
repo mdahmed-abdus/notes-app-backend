@@ -43,14 +43,9 @@ router.post(
   guest,
   catchAsyncErr(async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
+    const validPassword = await user?.comparePassword(req.body.password);
 
-    if (!user) {
-      throw new BadRequest('Invalid email or password');
-    }
-
-    const validPassword = await user.comparePassword(req.body.password);
-
-    if (!validPassword) {
+    if (!user || !validPassword) {
       throw new BadRequest('Invalid email or password');
     }
 

@@ -28,11 +28,7 @@ router.get(
   catchAsyncErr(async (req, res) => {
     const note = await Note.findById(req.params.id);
 
-    if (!note) {
-      throw new NotFound('Note with given id was not found');
-    }
-
-    if (!note.isOwner(req.session.userId)) {
+    if (!note?.isOwner(req.session.userId)) {
       throw new NotFound('Note with given id was not found');
     }
 
@@ -46,11 +42,7 @@ router.put(
   catchAsyncErr(async (req, res) => {
     const note = await Note.findById(req.params.id);
 
-    if (!note) {
-      throw new NotFound('Note with given id was not found');
-    }
-
-    if (!note.isOwner(req.session.userId)) {
+    if (!note?.isOwner(req.session.userId)) {
       throw new NotFound('Note with given id was not found');
     }
 
@@ -72,11 +64,7 @@ router.delete(
   catchAsyncErr(async (req, res) => {
     const note = await Note.findById(req.params.id);
 
-    if (!note) {
-      throw new NotFound('Note with given id was not found');
-    }
-
-    if (!note.isOwner(req.session.userId)) {
+    if (!note?.isOwner(req.session.userId)) {
       throw new NotFound('Note with given id was not found');
     }
 
