@@ -18,12 +18,13 @@ const auth = (req, res, next) => {
   next();
 };
 
-const active = (req, res, next) => {
+const active = async (req, res, next) => {
   const now = Date.now();
   const { createdAt } = req.session;
 
   if (now > createdAt + SESSION_ABSOLUTE_TIMEOUT) {
-    return logout(req, res);
+    await logout(req, res);
+    throw new Unauthorized('Session expired');
   }
 
   next();

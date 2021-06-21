@@ -71,8 +71,9 @@ router.post(
 router.post(
   '/logout',
   [auth, active],
-  catchAsyncErr((req, res) => {
-    authService.logout(req, res);
+  catchAsyncErr(async (req, res) => {
+    await authService.logout(req, res);
+    res.json({ success: true, message: 'User Logged out' });
   })
 );
 
