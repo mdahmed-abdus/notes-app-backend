@@ -53,7 +53,6 @@ router.put(
     const { error: validationError } = updateNoteSchema.validate(req.body);
 
     if (validationError) {
-      console.log(validationError);
       throw new BadRequest(validationError.details[0].message);
     }
 

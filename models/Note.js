@@ -30,11 +30,11 @@ const noteSchema = new mongoose.Schema(
 noteSchema.pre('save', async function (next) {
   const userExists = await User.exists({ _id: this.ownerId });
 
-  if (userExists) {
-    return next();
+  if (!userExists) {
+    return next(new BadRequest('Invalid owner id'));
   }
 
-  next(new BadRequest('Invalid owner id'));
+  next();
 });
 
 // method to validate owner
