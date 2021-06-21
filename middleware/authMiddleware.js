@@ -4,7 +4,7 @@ const { SESSION_ABSOLUTE_TIMEOUT } = require('../config/sessionConfig');
 
 const guest = (req, res, next) => {
   if (isLoggedIn(req)) {
-    throw new Unauthorized();
+    return next(new Unauthorized());
   }
 
   next();
@@ -12,7 +12,7 @@ const guest = (req, res, next) => {
 
 const auth = (req, res, next) => {
   if (!isLoggedIn(req)) {
-    throw new Unauthorized();
+    return next(new Unauthorized());
   }
 
   next();
@@ -24,7 +24,7 @@ const active = async (req, res, next) => {
 
   if (now > createdAt + SESSION_ABSOLUTE_TIMEOUT) {
     await logout(req, res);
-    throw new Unauthorized('Session expired');
+    return next(new Unauthorized('Session expired'));
   }
 
   next();

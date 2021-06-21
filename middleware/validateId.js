@@ -5,7 +5,7 @@ module.exports = (req, res, next, id) => {
   const validId = mongoose.Types.ObjectId.isValid(id);
 
   if (!validId) {
-    throw new BadRequest('Invalid id');
+    return next(new BadRequest('Invalid id'));
   }
 
   next();
