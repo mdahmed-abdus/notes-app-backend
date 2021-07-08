@@ -8,6 +8,7 @@ const {
   newNoteSchema,
   updateNoteSchema,
 } = require('../validators/noteValidator');
+const { User } = require('../models/User');
 
 const router = express.Router();
 
@@ -24,9 +25,11 @@ router.post(
       throw new BadRequest(validationError.details[0].message);
     }
 
-    const note = new Note({ ...req.body, ownerId: req.session.userId });
+    const note = new Note(req.body);
+    const user = await User.findById(req.session.userId);
 
-    await note.save();
+    user.notes.push(note);
+    await user.save();
 
     res.status(201).json({ success: true, message: 'Note created', note });
   })
@@ -36,9 +39,10 @@ router.get(
   '/:id',
   [auth, active],
   catchAsyncErr(async (req, res) => {
-    const note = await Note.findById(req.params.id);
+    const user = await User.findById(req.session.userId);
+    const note = user.notes.find((n, i) => n._id.toString() === req.params.id);
 
-    if (!note?.isOwner(req.session.userId)) {
+    if (!note) {
       throw new NotFound('Note with given id was not found');
     }
 
@@ -56,9 +60,10 @@ router.put(
       throw new BadRequest(validationError.details[0].message);
     }
 
-    const note = await Note.findById(req.params.id);
+    const user = await User.findById(req.session.userId);
+    const note = user.notes.find((n, i) => n._id.toString() === req.params.id);
 
-    if (!note?.isOwner(req.session.userId)) {
+    if (!note) {
       throw new NotFound('Note with given id was not found');
     }
 
@@ -68,7 +73,7 @@ router.put(
 
     note.title = title;
     note.body = body;
-    await note.save();
+    await user.save();
 
     res.json({ success: true, message: 'Note updated', note });
   })
@@ -78,13 +83,15 @@ router.delete(
   '/:id',
   [auth, active],
   catchAsyncErr(async (req, res) => {
-    const note = await Note.findById(req.params.id);
+    const user = await User.findById(req.session.userId);
+    const note = user.notes.find((n, i) => n._id.toString() === req.params.id);
 
-    if (!note?.isOwner(req.session.userId)) {
+    if (!note) {
       throw new NotFound('Note with given id was not found');
     }
 
     await note.remove();
+    await user.save();
 
     res.json({ success: true, message: 'Note deleted', note });
   })

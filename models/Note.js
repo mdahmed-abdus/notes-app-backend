@@ -18,29 +18,9 @@ const noteSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 1_000,
     },
-    ownerId: {
-      type: mongoose.Types.ObjectId,
-      required: true,
-    },
   },
   { timestamps: true }
 );
-
-// check if user id exists before saving
-noteSchema.pre('save', async function (next) {
-  const userExists = await User.exists({ _id: this.ownerId });
-
-  if (!userExists) {
-    return next(new BadRequest('Invalid owner id'));
-  }
-
-  next();
-});
-
-// method to validate owner
-noteSchema.methods.isOwner = function (userId) {
-  return userId === this.ownerId.toString();
-};
 
 const Note = mongoose.model('Note', noteSchema);
 

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { noteSchema } = require('./Note');
 const { BCRYPT_WORK_FACTOR } = require('../config/bcryptConfig');
 
 const userSchema = new mongoose.Schema(
@@ -24,13 +25,16 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       maxlength: 1024,
     },
+    notes: [noteSchema],
   },
   { timestamps: true }
 );
 
 // hash password before saving
 userSchema.pre('save', async function (next) {
-  this.password = await bcrypt.hash(this.password, BCRYPT_WORK_FACTOR);
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, BCRYPT_WORK_FACTOR);
+  }
   next();
 });
 
