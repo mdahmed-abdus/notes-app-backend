@@ -15,6 +15,19 @@ const router = express.Router();
 // validate id provided in params
 router.param('id', validateId);
 
+router.get(
+  '/all',
+  [auth, active],
+  catchAsyncErr(async (req, res) => {
+    const { notes } = await User.findById(req.session.userId);
+    res.json({
+      success: true,
+      message: `Found ${notes.length} note(s)`,
+      notes,
+    });
+  })
+);
+
 router.post(
   '/',
   [auth, active],
