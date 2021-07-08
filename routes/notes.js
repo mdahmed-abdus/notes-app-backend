@@ -20,7 +20,6 @@ router.post(
   [auth, active],
   catchAsyncErr(async (req, res) => {
     const { error: validationError } = newNoteSchema.validate(req.body);
-
     if (validationError) {
       throw new BadRequest(validationError.details[0].message);
     }
@@ -55,7 +54,6 @@ router.put(
   [auth, active],
   catchAsyncErr(async (req, res) => {
     const { error: validationError } = updateNoteSchema.validate(req.body);
-
     if (validationError) {
       throw new BadRequest(validationError.details[0].message);
     }

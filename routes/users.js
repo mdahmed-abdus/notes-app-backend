@@ -23,18 +23,17 @@ router.post(
   guest,
   catchAsyncErr(async (req, res) => {
     const { error: validationError } = registerSchema.validate(req.body);
-
     if (validationError) {
       throw new BadRequest(validationError.details[0].message);
     }
 
-    const userExists = await User.exists({ email: req.body.email });
+    const { name, email, password } = req.body;
 
-    if (userExists) {
+    if (await User.exists({ email })) {
       throw new BadRequest('User already registered');
     }
 
-    const user = new User(_.pick(req.body, ['name', 'email', 'password']));
+    const user = new User({ name, email, password });
     await user.save();
 
     res.status(201).json({
@@ -50,7 +49,6 @@ router.post(
   guest,
   catchAsyncErr(async (req, res) => {
     const { error: validationError } = loginSchema.validate(req.body);
-
     if (validationError) {
       throw new BadRequest(validationError.details[0].message);
     }
@@ -73,7 +71,7 @@ router.post(
   [auth, active],
   catchAsyncErr(async (req, res) => {
     await authService.logout(req, res);
-    res.json({ success: true, message: 'User Logged out' });
+    res.json({ success: true, message: 'User logged out' });
   })
 );
 

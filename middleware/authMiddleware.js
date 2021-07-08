@@ -6,7 +6,6 @@ const guest = (req, res, next) => {
   if (isLoggedIn(req)) {
     return next(new Unauthorized());
   }
-
   next();
 };
 
@@ -14,7 +13,6 @@ const auth = (req, res, next) => {
   if (!isLoggedIn(req)) {
     return next(new Unauthorized());
   }
-
   next();
 };
 
