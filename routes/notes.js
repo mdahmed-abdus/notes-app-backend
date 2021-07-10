@@ -16,7 +16,7 @@ const router = express.Router();
 router.param('id', validateId);
 
 router.get(
-  '/all',
+  '/',
   [auth, active],
   catchAsyncErr(async (req, res) => {
     const { notes } = await User.findById(req.session.userId);

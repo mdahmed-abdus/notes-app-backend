@@ -10,7 +10,7 @@ const { registerSchema, loginSchema } = require('../validators/userValidator');
 const router = express.Router();
 
 router.get(
-  '/profile',
+  '/',
   [auth, active],
   catchAsyncErr(async (req, res) => {
     const user = await User.findById(req.session.userId).select('-password');
