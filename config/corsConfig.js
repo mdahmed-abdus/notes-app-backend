@@ -1,3 +1,7 @@
-const corsOptions = { origin: 'http://localhost:3000', credentials: true };
+const CORS_OPTIONS = {
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+};
 
-module.exports = { corsOptions };
+module.exports = { CORS_OPTIONS };
