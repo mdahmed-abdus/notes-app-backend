@@ -2,7 +2,7 @@ require('dotenv').config({ path: './config/.env' });
 
 const express = require('express');
 const connectDb = require('./services/connectDb');
-const { APP_PORT, NODE_ENV } = require('./config/appConfig');
+const { APP_PORT, NODE_ENV, APP_URL } = require('./config/appConfig');
 const appMiddleware = require('./middleware/appMiddleware');
 const appRoutes = require('./routes/appRoutes');
 const appErrors = require('./errors/appErrors');
@@ -17,6 +17,6 @@ app.on('ready', () => {
   appErrors(app);
 
   app.listen(APP_PORT, () => {
-    console.log(`Server running on port: ${APP_PORT} in '${NODE_ENV}' mode`);
+    console.log(`Server running [mode - ${NODE_ENV}]: ${APP_URL}`);
   });
 });

@@ -1,9 +1,16 @@
-const {
-  APP_PORT = 3000,
-  NODE_ENV = 'development',
-  APP_HOSTNAME = 'localhost',
-} = process.env;
+const { NODE_ENV, APP_PROTOCOL, APP_HOSTNAME, APP_PORT, APP_SECRET } =
+  process.env;
 
 const IN_PROD = NODE_ENV === 'production';
 
-module.exports = { APP_PORT, NODE_ENV, APP_HOSTNAME, IN_PROD };
+const APP_URL = `${APP_PROTOCOL}://${APP_HOSTNAME}:${APP_PORT}`;
+
+module.exports = {
+  NODE_ENV,
+  APP_PROTOCOL,
+  APP_HOSTNAME,
+  APP_PORT,
+  APP_SECRET,
+  IN_PROD,
+  APP_URL,
+};

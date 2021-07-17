@@ -1,4 +1,4 @@
-const { MONGO_URI = 'mongodb://localhost/notes-app' } = process.env;
+const { MONGO_URI } = process.env;
 
 const MONGO_OPTIONS = {
   useNewUrlParser: true,
