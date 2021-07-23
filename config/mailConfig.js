@@ -1,9 +1,13 @@
-const { SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD } = process.env;
 const { APP_HOSTNAME, IN_PROD } = require('./appConfig');
+const { env } = process;
+
+const { SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD } = env;
+const SMTP_PORT = +env.SMTP_PORT;
+const EMAIL_VERIFICATION_TIMEOUT = +env.EMAIL_VERIFICATION_TIMEOUT;
 
 const SMTP_OPTIONS = {
   host: SMTP_HOST,
-  port: +SMTP_PORT,
+  port: SMTP_PORT,
   secure: IN_PROD,
   auth: {
     user: SMTP_USERNAME,
@@ -13,4 +17,4 @@ const SMTP_OPTIONS = {
 
 const FROM = `noreply@${APP_HOSTNAME}`;
 
-module.exports = { SMTP_OPTIONS, FROM };
+module.exports = { SMTP_OPTIONS, FROM, EMAIL_VERIFICATION_TIMEOUT };
