@@ -26,4 +26,12 @@ class Unauthorized extends HttpError {
   }
 }
 
-module.exports = { BadRequest, NotFound, Unauthorized };
+class Forbidden extends HttpError {
+  constructor(message = 'Forbidden') {
+    super(message);
+
+    this.status = 403;
+  }
+}
+
+module.exports = { BadRequest, NotFound, Unauthorized, Forbidden };
