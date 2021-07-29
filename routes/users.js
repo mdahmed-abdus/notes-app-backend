@@ -62,7 +62,10 @@ router.post(
     }
 
     const user = await User.findOne({ email: req.body.email });
-    const validPassword = await user?.comparePassword(req.body.password);
+    const validPassword = await User.comparePassword(
+      req.body.password,
+      user?.password
+    );
 
     if (!user || !validPassword) {
       throw new BadRequest('Invalid email or password');

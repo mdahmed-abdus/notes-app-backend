@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { noteSchema } = require('./Note');
 const { sendMail } = require('../services/mailService');
-const { BCRYPT_WORK_FACTOR } = require('../config/bcryptConfig');
+const { BCRYPT_WORK_FACTOR, DUMMY_HASH } = require('../config/bcryptConfig');
 const { APP_URL } = require('../config/appConfig');
 const { JWT_PRIVATE_KEY } = require('../config/keys');
 const {
@@ -82,6 +82,11 @@ userSchema.methods.sendPasswordResetEmail = function () {
 
 userSchema.methods.isVerified = function () {
   return !!this.verifiedAt;
+};
+
+userSchema.statics.comparePassword = function (plainTextPwd, hashedPwd) {
+  // using dummy hash to mitigate timing attack
+  return bcrypt.compare(plainTextPwd, hashedPwd || DUMMY_HASH);
 };
 
 userSchema.statics.verifyToken = function (token) {
