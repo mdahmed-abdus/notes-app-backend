@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const { User } = require('./User');
-const { BadRequest } = require('../errors/customErrors');
 
 const noteSchema = new mongoose.Schema(
   {

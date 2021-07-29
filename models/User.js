@@ -5,11 +5,11 @@ const { noteSchema } = require('./Note');
 const { sendMail } = require('../services/mailService');
 const { BCRYPT_WORK_FACTOR } = require('../config/bcryptConfig');
 const { APP_URL } = require('../config/appConfig');
-const { JWT_PRIVATE_KEY } = require('../config/jwtConfig');
+const { JWT_PRIVATE_KEY } = require('../config/keys');
 const {
   EMAIL_VERIFICATION_TIMEOUT,
   PASSWORD_RESET_TIMEOUT,
-} = require('../config/mailConfig');
+} = require('../config/authConfig');
 
 const userSchema = new mongoose.Schema(
   {
