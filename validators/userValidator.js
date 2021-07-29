@@ -20,4 +20,14 @@ const loginSchema = Joi.object({ email, password });
 
 const resendEmailSchema = Joi.object({ email });
 
-module.exports = { registerSchema, loginSchema, resendEmailSchema };
+const forgotPasswordSchema = Joi.object({ email });
+
+const resetPasswordSchema = Joi.object({ password, confirmPassword });
+
+module.exports = {
+  registerSchema,
+  loginSchema,
+  resendEmailSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+};

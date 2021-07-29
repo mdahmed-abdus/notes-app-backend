@@ -6,7 +6,10 @@ const { sendMail } = require('../services/mailService');
 const { BCRYPT_WORK_FACTOR } = require('../config/bcryptConfig');
 const { APP_URL } = require('../config/appConfig');
 const { JWT_PRIVATE_KEY } = require('../config/jwtConfig');
-const { EMAIL_VERIFICATION_TIMEOUT } = require('../config/mailConfig');
+const {
+  EMAIL_VERIFICATION_TIMEOUT,
+  PASSWORD_RESET_TIMEOUT,
+} = require('../config/mailConfig');
 
 const userSchema = new mongoose.Schema(
   {
@@ -63,11 +66,25 @@ userSchema.methods.sendConfirmationEmail = function () {
   });
 };
 
+userSchema.methods.sendPasswordResetEmail = function () {
+  const token = jwt.sign({ _id: this._id }, JWT_PRIVATE_KEY, {
+    expiresIn: PASSWORD_RESET_TIMEOUT,
+  });
+
+  const url = APP_URL + `/users/password/reset?token=${token}`;
+
+  return sendMail({
+    to: this.email,
+    subject: 'Password reset',
+    text: `Please click on this link to reset your password: ${url}`,
+  });
+};
+
 userSchema.methods.isVerified = function () {
   return !!this.verifiedAt;
 };
 
-userSchema.statics.verifyConfirmationToken = function (token) {
+userSchema.statics.verifyToken = function (token) {
   try {
     return jwt.verify(token, JWT_PRIVATE_KEY);
   } catch {}

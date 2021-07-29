@@ -9,6 +9,8 @@ const {
   registerSchema,
   loginSchema,
   resendEmailSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } = require('../validators/userValidator');
 
 const router = express.Router();
@@ -112,7 +114,7 @@ router.post(
       throw new BadRequest('Token not provided');
     }
 
-    const decoded = User.verifyConfirmationToken(token);
+    const decoded = User.verifyToken(token);
     if (!decoded) {
       throw new BadRequest('Invalid token');
     }
@@ -126,6 +128,51 @@ router.post(
     await user.save();
 
     res.json({ success: true, message: 'Email verified' });
+  })
+);
+
+router.post(
+  '/password/forgot',
+  catchAsyncErr(async (req, res) => {
+    const { error: validationError } = forgotPasswordSchema.validate(req.body);
+    if (validationError) {
+      throw new BadRequest(validationError.details[0].message);
+    }
+
+    const user = await User.findOne({ email: req.body.email });
+    if (!user || !user?.isVerified()) {
+      throw new BadRequest('Invalid email');
+    }
+
+    await user.sendPasswordResetEmail();
+
+    res.json({ success: true, message: 'Mail sent' });
+  })
+);
+
+router.post(
+  '/password/reset',
+  catchAsyncErr(async (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+      throw new BadRequest('Token not provided');
+    }
+
+    const { error: validationError } = resetPasswordSchema.validate(req.body);
+    if (validationError) {
+      throw new BadRequest(validationError.details[0].message);
+    }
+
+    const decoded = User.verifyToken(token);
+    if (!decoded) {
+      throw new BadRequest('Invalid token');
+    }
+
+    const user = await User.findById(decoded._id);
+    user.password = req.body.password;
+    await user.save();
+
+    res.json({ success: true, message: 'Password changed successfully' });
   })
 );
 
