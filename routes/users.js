@@ -4,6 +4,7 @@ const { User } = require('../models/User');
 const authService = require('../services/authService');
 const { BadRequest, Forbidden } = require('../errors/customErrors');
 const catchAsyncErr = require('../middleware/catchAsyncErr');
+const validateTokenId = require('../middleware/validateTokenId');
 const { auth, active, guest } = require('../middleware/authMiddleware');
 const {
   registerSchema,
@@ -111,24 +112,21 @@ router.post(
 
 router.post(
   '/email/verify',
+  validateTokenId,
   catchAsyncErr(async (req, res) => {
-    const { token } = req.query;
+    const token = await User.verifyToken(req.query.tokenId);
     if (!token) {
-      throw new BadRequest('Token not provided');
-    }
-
-    const decoded = User.verifyToken(token);
-    if (!decoded) {
       throw new BadRequest('Invalid token');
     }
 
-    const user = await User.findById(decoded._id);
+    const user = await User.findById(token.userId);
     if (!user || user?.isVerified()) {
       throw new BadRequest('Invalid email or already verified');
     }
 
     user.verifiedAt = new Date();
     await user.save();
+    await token.remove();
 
     res.json({ success: true, message: 'Email verified' });
   })
@@ -155,25 +153,28 @@ router.post(
 
 router.post(
   '/password/reset',
+  validateTokenId,
   catchAsyncErr(async (req, res) => {
-    const { token } = req.query;
-    if (!token) {
-      throw new BadRequest('Token not provided');
-    }
-
     const { error: validationError } = resetPasswordSchema.validate(req.body);
     if (validationError) {
       throw new BadRequest(validationError.details[0].message);
     }
 
-    const decoded = User.verifyToken(token);
-    if (!decoded) {
+    const token = await User.verifyToken(req.query.tokenId);
+    if (!token) {
       throw new BadRequest('Invalid token');
     }
 
-    const user = await User.findById(decoded._id);
+    const user = await User.findById(token.userId);
+    console.log(token);
+    console.log(user);
+    if (!user || !user?.isVerified()) {
+      throw new BadRequest('Invalid email or user not verified');
+    }
+
     user.password = req.body.password;
     await user.save();
+    await token.remove();
 
     res.json({ success: true, message: 'Password changed successfully' });
   })

@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { noteSchema } = require('./Note');
+const { Token } = require('./Token');
 const { sendMail } = require('../services/mailService');
 const { BCRYPT_WORK_FACTOR, DUMMY_HASH } = require('../config/bcryptConfig');
 const { APP_URL } = require('../config/appConfig');
-const { JWT_PRIVATE_KEY } = require('../config/keys');
 const {
   EMAIL_VERIFICATION_TIMEOUT,
   PASSWORD_RESET_TIMEOUT,
@@ -47,17 +46,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// method to compare passwords
-userSchema.methods.comparePassword = function (plainTextPassword) {
-  return bcrypt.compare(plainTextPassword, this.password);
-};
-
-userSchema.methods.sendConfirmationEmail = function () {
-  const token = jwt.sign({ _id: this._id }, JWT_PRIVATE_KEY, {
-    expiresIn: EMAIL_VERIFICATION_TIMEOUT,
+userSchema.methods.sendConfirmationEmail = async function () {
+  const token = new Token({
+    userId: this._id,
+    expires: Date.now() + EMAIL_VERIFICATION_TIMEOUT,
   });
+  await token.save();
 
-  const url = APP_URL + `/users/email/verify?token=${token}`;
+  const url = APP_URL + `/users/email/verify?tokenId=${token._id}`;
 
   return sendMail({
     to: this.email,
@@ -66,12 +62,14 @@ userSchema.methods.sendConfirmationEmail = function () {
   });
 };
 
-userSchema.methods.sendPasswordResetEmail = function () {
-  const token = jwt.sign({ _id: this._id }, JWT_PRIVATE_KEY, {
-    expiresIn: PASSWORD_RESET_TIMEOUT,
+userSchema.methods.sendPasswordResetEmail = async function () {
+  const token = new Token({
+    userId: this._id,
+    expires: Date.now() + PASSWORD_RESET_TIMEOUT,
   });
+  await token.save();
 
-  const url = APP_URL + `/users/password/reset?token=${token}`;
+  const url = APP_URL + `/users/password/reset?tokenId=${token._id}`;
 
   return sendMail({
     to: this.email,
@@ -89,10 +87,15 @@ userSchema.statics.comparePassword = function (plainTextPwd, hashedPwd) {
   return bcrypt.compare(plainTextPwd, hashedPwd || DUMMY_HASH);
 };
 
-userSchema.statics.verifyToken = function (token) {
-  try {
-    return jwt.verify(token, JWT_PRIVATE_KEY);
-  } catch {}
+userSchema.statics.verifyToken = async function (tokenId) {
+  const token = await Token.findById(tokenId);
+
+  if (token?.hasExpired()) {
+    await token.remove();
+    return false;
+  }
+
+  return token;
 };
 
 const User = mongoose.model('User', userSchema);
