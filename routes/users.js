@@ -13,6 +13,7 @@ const {
   forgotPasswordSchema,
   resetPasswordSchema,
 } = require('../validators/userValidator');
+const removeUserSessions = require('../scripts/removeUserSessions');
 
 const router = express.Router();
 
@@ -166,8 +167,6 @@ router.post(
     }
 
     const user = await User.findById(token.userId);
-    console.log(token);
-    console.log(user);
     if (!user || !user?.isVerified()) {
       throw new BadRequest('Invalid email or user not verified');
     }
@@ -175,6 +174,7 @@ router.post(
     user.password = req.body.password;
     await user.save();
     await token.remove();
+    await removeUserSessions(user._id);
 
     res.json({ success: true, message: 'Password changed successfully' });
   })
