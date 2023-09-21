@@ -79,7 +79,12 @@ router.post(
 
     authService.login(req, user._id);
 
-    res.json({ success: true, message: 'User logged in' });
+    const { name, email, notes } = user;
+    res.json({
+      success: true,
+      message: 'User logged in',
+      user: { name, email, notes },
+    });
   })
 );
 
