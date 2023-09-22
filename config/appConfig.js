@@ -1,4 +1,4 @@
-const { NODE_ENV, APP_HOSTNAME, APP_PORT } = process.env;
+const { NODE_ENV, FRONTEND_URL, APP_HOSTNAME, APP_PORT } = process.env;
 
 const IN_PROD = NODE_ENV === 'production';
 
@@ -8,6 +8,7 @@ const APP_URL = `${APP_PROTOCOL}://${APP_HOSTNAME}:${APP_PORT}`;
 
 module.exports = {
   NODE_ENV,
+  FRONTEND_URL,
   APP_PROTOCOL,
   APP_HOSTNAME,
   APP_PORT,

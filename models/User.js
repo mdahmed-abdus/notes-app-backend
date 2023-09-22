@@ -4,7 +4,7 @@ const { noteSchema } = require('./Note');
 const { Token } = require('./Token');
 const { sendMail } = require('../services/mailService');
 const { BCRYPT_WORK_FACTOR, DUMMY_HASH } = require('../config/bcryptConfig');
-const { APP_URL } = require('../config/appConfig');
+const { FRONTEND_URL } = require('../config/appConfig');
 const {
   EMAIL_VERIFICATION_TIMEOUT,
   PASSWORD_RESET_TIMEOUT,
@@ -53,7 +53,7 @@ userSchema.methods.sendConfirmationEmail = async function () {
   });
   await token.save();
 
-  const url = APP_URL + `/users/email/verify?tokenId=${token._id}`;
+  const url = FRONTEND_URL + `/users/email/verify?tokenId=${token._id}`;
 
   return sendMail({
     to: this.email,
@@ -69,7 +69,7 @@ userSchema.methods.sendPasswordResetEmail = async function () {
   });
   await token.save();
 
-  const url = APP_URL + `/users/password/reset?tokenId=${token._id}`;
+  const url = FRONTEND_URL + `/users/password/reset?tokenId=${token._id}`;
 
   return sendMail({
     to: this.email,
