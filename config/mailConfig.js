@@ -1,7 +1,7 @@
-const { APP_HOSTNAME, IN_PROD, RESEND_API_KEY } = require('./appConfig');
+const { APP_HOSTNAME, IN_PROD } = require('./appConfig');
 const { env } = process;
 
-const { SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD } = env;
+const { SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, RESEND_API_KEY } = env;
 const SMTP_PORT = +env.SMTP_PORT;
 
 const SMTP_OPTIONS = {

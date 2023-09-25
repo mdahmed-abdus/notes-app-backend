@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const { Resend } = require('resend');
 const { IN_PROD } = require('../config/appConfig');
-const { SMTP_OPTIONS, FROM } = require('../config/mailConfig');
+const { SMTP_OPTIONS, FROM, RESEND_API_KEY } = require('../config/mailConfig');
 
 // smtp
 const transporter = nodemailer.createTransport(SMTP_OPTIONS);
