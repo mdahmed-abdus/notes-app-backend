@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 const morgan = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -15,7 +17,10 @@ module.exports = app => {
   // body parser
   app.use(express.json());
 
-  if (!IN_PROD) {
+  if (IN_PROD) {
+    app.use(helmet());
+    app.use(mongoSanitize());
+  } else {
     app.use(morgan('dev'));
   }
 
