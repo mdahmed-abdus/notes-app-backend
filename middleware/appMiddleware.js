@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
-const morgan = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const { IN_PROD } = require('../config/appConfig');
@@ -21,6 +20,7 @@ module.exports = app => {
     app.use(helmet());
     app.use(mongoSanitize());
   } else {
+    const morgan = require('morgan');
     app.use(morgan('dev'));
   }
 
