@@ -16,7 +16,7 @@ app.on('ready', () => {
   appRoutes(app);
   appErrors(app);
 
-  app.listen(APP_PORT, () => {
+  app.listen(APP_PORT, '0.0.0.0', () => {
     console.log(`Server running [mode - ${NODE_ENV}]: ${APP_URL}`);
   });
 });

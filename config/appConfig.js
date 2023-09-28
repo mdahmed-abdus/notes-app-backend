@@ -1,4 +1,12 @@
-const { NODE_ENV, FRONTEND_URL, APP_HOSTNAME, APP_PORT } = process.env;
+const {
+  NODE_ENV,
+  FRONTEND_URL,
+  APP_HOSTNAME,
+  APP_PORT: ENV_APP_PORT,
+  PORT,
+} = process.env;
+
+const APP_PORT = PORT ? PORT : ENV_APP_PORT;
 
 const IN_PROD = NODE_ENV === 'production';
 
