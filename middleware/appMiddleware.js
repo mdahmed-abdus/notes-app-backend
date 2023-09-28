@@ -10,6 +10,8 @@ const { SESSION_OPTIONS } = require('../config/sessionConfig');
 const { MONGO_STORE_OPTIONS } = require('../config/mongoStoreConfig');
 
 module.exports = app => {
+  app.set('trust proxy', true);
+
   // cors
   app.use(cors(CORS_OPTIONS));
 

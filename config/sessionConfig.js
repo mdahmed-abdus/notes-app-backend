@@ -10,7 +10,7 @@ const SESSION_OPTIONS = {
   name: SESSION_NAME,
   cookie: {
     maxAge: SESSION_IDLE_TIMEOUT,
-    secure: false,
+    secure: true,
     sameSite: 'none',
     httpOnly: true,
   },
