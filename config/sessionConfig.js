@@ -11,8 +11,8 @@ const SESSION_OPTIONS = {
   proxy: true,
   cookie: {
     maxAge: SESSION_IDLE_TIMEOUT,
-    secure: true,
-    sameSite: 'none',
+    secure: IN_PROD,
+    sameSite: 'lax',
     httpOnly: true,
   },
   rolling: true,
